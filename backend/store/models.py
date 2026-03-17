@@ -209,6 +209,16 @@ class SiteSettings(models.Model):
     def __str__(self):
         return "Site Configuration"
 
+# Sanitization script logic (to be run via shell)
+# from store.models import SiteSettings
+# settings = SiteSettings.objects.first()
+# if settings:
+#     settings.email_host_user = 'your-email@gmail.com'
+#     settings.email_host_password = 'your-app-password'
+#     settings.sslcommerz_store_id = 'your_store_id'
+#     settings.sslcommerz_store_pass = 'your_store_password'
+#     settings.save()
+
 
 class VerificationCode(models.Model):
     """Store email verification codes for new user registrations"""
