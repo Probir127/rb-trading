@@ -6,8 +6,8 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', RedirectView.as_view(url='/admin/', permanent=False)), # Redirect root to admin
     path('', include('store.urls')),
+    path('', RedirectView.as_view(url='/admin/', permanent=False), name='index'), # Redirect root to admin
 ]
 
 if settings.DEBUG:

@@ -14,6 +14,7 @@ app_name = 'store'
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('api/index/', api_views.CategoryViewSet.as_view({'get': 'list'}), name='index'),
     # Custom JWT endpoint that accepts email instead of username
     path('api/auth/jwt/create/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/', include('djoser.urls')),
