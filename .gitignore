@@ -42,3 +42,4 @@ Desktop.ini
 # Lint artifacts
 frontend/lint.json
 frontend/lint_output.txt
+.wrangler/
