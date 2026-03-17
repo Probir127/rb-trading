@@ -1,0 +1,223 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static store_filters %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .dashboard-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .dashboard-card h3 {
+        margin-top: 0;
+        color: #64748b;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .dashboard-card .value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1e293b;
+        margin: 10px 0;
+    }
+
+    .text-success {
+        color: #10b981 !important;
+    }
+
+    .text-danger {
+        color: #ef4444 !important;
+    }
+
+    .text-primary {
+        color: #3b82f6 !important;
+    }
+
+    .filter-btn {
+        padding: 6px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+        color: #333;
+        text-decoration: none;
+        margin-left: 5px;
+    }
+
+    .filter-btn.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+        <h1>Financial Dashboard</h1>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <span style="color: #666;">Filter:</span>
+            <a href="?" class="filter-btn {% if not days_filter or days_filter == 'all' %}active{% endif %}">All
+                Time</a>
+            <a href="?days=7" class="filter-btn {% if days_filter == '7' %}active{% endif %}">7 Days</a>
+            <a href="?days=30" class="filter-btn {% if days_filter == '30' %}active{% endif %}">30 Days</a>
+            <a href="?days=90" class="filter-btn {% if days_filter == '90' %}active{% endif %}">90 Days</a>
+
+            <!-- Custom Date Range -->
+            <form method="get" style="display: inline-flex; align-items: center; gap: 5px; margin-left: 10px;">
+                <input type="date" name="from_date" value="{{ from_date|default:'' }}"
+                    style="padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;"
+                    placeholder="From">
+                <span style="color: #666;">to</span>
+                <input type="date" name="to_date" value="{{ to_date|default:'' }}"
+                    style="padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;"
+                    placeholder="To">
+                <button type="submit" class="filter-btn"
+                    style="background: #6366f1; color: white; border-color: #6366f1; cursor: pointer;">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+            </form>
+
+            {% if days_filter or from_date or to_date %}
+            <a href="?" class="filter-btn" style="background: #f97316; color: white; border-color: #f97316;">
+                <i class="fas fa-times"></i> Clear
+            </a>
+            {% endif %}
+
+            <a href="{{ add_url }}" class="filter-btn"
+                style="background: #10b981; color: white; border-color: #10b981; margin-left: 10px;">
+                <i class="fas fa-plus"></i> Add Transaction
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 40px;">
+        <div class="dashboard-card">
+            <h3>Total Revenue</h3>
+            <div class="value text-success">{{ total_revenue|currency }}</div>
+            <div style="font-size: 12px; color: #999;">Income from Sales & Entries</div>
+        </div>
+        <div class="dashboard-card">
+            <h3>Total Expenses</h3>
+            <div class="value text-danger">{{ total_expenses|currency }}</div>
+            <div style="font-size: 12px; color: #999;">Operating Costs</div>
+        </div>
+        <div class="dashboard-card">
+            <h3>Net Profit</h3>
+            <div class="value {% if net_profit >= 0 %}text-primary{% else %}text-danger{% endif %}">
+                {{ net_profit|currency }}
+            </div>
+            <div style="font-size: 12px; color: #999;">Revenue - Expenses</div>
+        </div>
+        <div class="dashboard-card">
+            <h3>Cash Flow</h3>
+            <div class="value {% if monthly_cashflow >= 0 %}text-success{% else %}text-danger{% endif %}">
+                {{ monthly_cashflow|currency }}
+            </div>
+            <div style="font-size: 12px; color: #999;">Net change in period</div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div
+        style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 40px;">
+        <h3 style="margin-bottom: 20px; color: #333;">Revenue Trend</h3>
+        <div style="height: 300px;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3 style="margin-bottom: 20px; color: #333;">Recent Transactions</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                    <th style="padding: 12px;">Date</th>
+                    <th style="padding: 12px;">Description</th>
+                    <th style="padding: 12px;">Type</th>
+                    <th style="padding: 12px; text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in recent_entries %}
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 12px;">{{ entry.date }}</td>
+                    <td style="padding: 12px;">{{ entry.description }}</td>
+                    <td style="padding: 12px;">
+                        <span
+                            style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; 
+                            {% if entry.entry_type == 'income' %}background: #dcfce7; color: #166534;{% else %}background: #fee2e2; color: #991b1b;{% endif %}">
+                            {{ entry.entry_type|upper }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px; text-align: right; font-weight: bold; 
+                        {% if entry.entry_type == 'income' %}color: #10b981;{% else %}color: #ef4444;{% endif %}">
+                        {{ entry.amount|currency }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="padding: 20px; text-align: center; color: #666;">No recent transactions
+                        found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const chartData = {
+        labels: JSON.parse('{{ daily_labels|safe }}'),
+        datasets: [{
+            label: 'Daily Revenue',
+            data: JSON.parse('{{ daily_revenue|safe }}'),
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        borderDash: [2, 4]
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

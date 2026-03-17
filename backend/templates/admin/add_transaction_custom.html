@@ -1,0 +1,55 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static admin_modify %}
+
+{% block content %}
+<div
+    style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee;">Add Financial Transaction</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Entry Type</label>
+            {{ form.entry_type }}
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Amount</label>
+            {{ form.amount }}
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Description</label>
+            {{ form.description }}
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Date</label>
+            {{ form.date }}
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" class="button button-primary" style="padding: 10px 20px; font-size: 16px;">Save
+                Transaction</button>
+            <a href="{% url 'admin:store_financialreport_changelist' %}" class="button"
+                style="padding: 10px 20px; font-size: 16px; background: #f1f5f9; color: #333;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Minimal styling for default Django widgets */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+</style>
+{% endblock %}

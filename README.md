@@ -1,102 +1,106 @@
-# RB Trading - E-commerce Platform
+# Enterprise E-commerce Application
 
-A fully functional, responsive, and dynamic e-commerce website built with Django. This project features a modern UI, a powerful admin panel (Jazzmin), Stripe payment integration, and mobile-optimized design.
+A production-ready, enterprise-grade e-commerce system built with Django (Backend) and React (Frontend). Featuring dual payment methods, secure authentication with email verification, and a modular architecture.
 
-## 🚀 Features
+## 🚀 Quick Start
 
-- **Storefront**:
-  - Dynamic product listings with categories and advanced filtering.
-  - Responsive design (Mobile, Tablet, Desktop) with mobile navigation drawer.
-  - Search functionality and pagination.
-  - Product detail pages with image galleries and related products.
-  - Shopping cart with AJAX updates (no page reload).
-  - User authentication (Sign Up, Login, Profile, Order History).
+### 1. Prerequisites
+- Python 3.10+
+- Node.js 18+
+- Gmail account (for SMTP)
+- SSLCommerz Sandbox Account (optional, for testing online payments)
 
-- **Checkout & Payments**:
-  - Secure checkout process.
-  - **Stripe Integration** for credit card payments.
-  - **Cash on Delivery (COD)** option.
-  - Order tracking system with timeline view.
-
-- **Admin Panel**:
-  - Custom branded interface using `django-jazzmin`.
-  - Dashboard with key metrics.
-  - Visual **Stock Status Indicators** (Low Stock alerts).
-  - Order management (status updates, invoicing).
-  - Product management with bulk actions.
-
-## 🛠️ Tech Stack
-
-- **Backend**: Python, Django 5.2
-- **Database**: SQLite (default)
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
-- **Payment**: Stripe API
-- **Admin**: Django Jazzmin
-
-## ⚙️ Installation & Setup
-
-Follow these steps to set up the project locally:
-
-### 1. Clone the Repository
+### 2. Backend Setup
 ```bash
-git clone https://github.com/Probir127/e-commerce-.git
-cd e-commerce-
-```
-
-### 2. Create Virtual Environment
-```bash
-python -m venv venv
-# Activate on Windows:
-venv\Scripts\activate
-# Activate on macOS/Linux:
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
+cd backend
+# Virtual environment (assumed created)
+# Activate: .\venv\Scripts\activate (Windows)
 pip install -r requirements.txt
-```
-
-### 4. Configure Environment Variables
-Create a `.env` file in the root directory (next to `manage.py`) and add:
-```env
-# Security
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-
-# Stripe (Test Keys)
-STRIPE_PUBLIC_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_... (Optional)
-
-# Email (Optional/For production)
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-```
-
-### 5. Apply Migrations
-```bash
 python manage.py migrate
-```
-
-### 6. Create Superuser (Admin)
-```bash
-python manage.py createsuperuser
-```
-
-### 7. Run the Server
-```bash
 python manage.py runserver
 ```
 
-Visit `http://127.0.0.1:8000` to view the site.
-Access the admin panel at `http://127.0.0.1:8000/admin`.
+### 3. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## 📱 Mobile Features
-- **Swipe-friendly navigation**: Hamburger menu on mobile.
-- **Back-to-top button**: Appears on scroll.
-- **Optimized layouts**: Single column on phone, multi-column on desktop.
-- **Touch targets**: Enhanced for mobile usage.
+---
 
-## 📄 License
-This project is open-source and available for educational purposes.
+## ⚙️ Configuration (.env)
+
+Create a `.env` file in the project root based on `.env.example`.
+
+| Variable | Description |
+|----------|-------------|
+| `SECRET_KEY` | Django secret key for session/token security. |
+| `DEBUG` | Set to `False` in production. |
+| `FRONTEND_URL` | URL where your frontend is hosted (e.g., `http://localhost:5173`). |
+| `SSLCOMMERZ_STORE_ID` | Your SSLCommerz Store ID. |
+| `SSLCOMMERZ_STORE_PASS`| Your SSLCommerz Store Password. |
+| `EMAIL_HOST_USER` | Your Gmail address (also used for Admin notifications). |
+| `EMAIL_HOST_PASSWORD` | Your Gmail App Password (NOT your regular password). |
+
+---
+
+## 🛠️ Key Features & Modules
+
+### 🔐 Authentication Flow
+- **Registration**: All new accounts are created as `inactive`.
+- **Verification**: Users receive a code via email. They must verify their email before logging in.
+- **JWT**: Custom JWT flow using email instead of username.
+
+### 💳 Payment Methods
+- **Online (SSLCommerz)**: Secure redirect with IPN (Instant Payment Notification) validation.
+- **COD (Cash on Delivery)**: Immediate order creation with 'Pending' payment status and dedicated tracking.
+
+### 📦 Order Management
+- **Site Settings**: Administrators can update store contact details and payment credentials via the Admin panel.
+- **Notifications**: Automatic email updates to customers when status changes to `Shipped` or `Delivered`.
+- **History**: Full order history with invoice details for customers.
+
+---
+
+## 🌐 Deployment (Cloudflare)
+
+### Frontend Deployment
+The frontend is Vite-based and can be hosted on Cloudflare Pages.
+1. `cd frontend`
+2. `npm run build`
+3. Deploy the `dist` folder:
+   ```bash
+   npx wrangler pages deploy dist
+   ```
+
+### Backend Deployment
+For the Django backend, use a service like Heroku, DigitalOcean, or AWS. Ensure `ALLOWED_HOSTS` and `CORS_ALLOWED_ORIGINS` in `settings.py` are updated with your production URLs.
+
+---
+
+## ⚡ Quick CLI Deployment (One-Liners)
+
+### 1. Deploy Frontend (Cloudflare Pages)
+Run from the root directory (PowerShell):
+```powershell
+cd frontend; npm run build; npx wrangler pages deploy dist --project-name e-commerce-demo-frontend
+```
+
+### 2. Demo Host Backend (Cloudflare Tunnel)
+To expose your local Django server, you first need the `cloudflared` utility:
+```powershell
+# Install the tunnel utility globally
+npm install -g @cloudflare/cloudflared
+
+# Start the tunnel
+cloudflared tunnel --url http://localhost:8000
+```
+*(Note: This provides a secure HTTPS URL for your backend that doesn't expire during the session.)*
+
+---
+
+## 🧹 Maintenance
+- **Clean Code**: Use `python manage.py check` to verify backend integrity.
+- **Assets**: All `static` and `media` files are located inside the `backend/` directory for structure isolation.
+- **Admin**: Access the enhanced Jazzmin dashboard at `/admin/`.

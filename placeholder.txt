@@ -1,2 +1,0 @@
-# This is a placeholder for the copy command
-# I will run the copy command in the next step
