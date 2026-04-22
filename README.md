@@ -18,15 +18,6 @@ cd backend
 
 A production-ready e-commerce web application with dual payment methods, JWT authentication with email verification, and automated order management — built with Django REST Framework and React.
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
-![Django](https://img.shields.io/badge/Django-REST%20Framework-green?logo=django&logoColor=white)
-![React](https://img.shields.io/badge/React-Vite-61DAFB?logo=react&logoColor=black)
-![SSLCommerz](https://img.shields.io/badge/Payment-SSLCommerz-orange)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-![Status](https://img.shields.io/badge/Status-Active-success)
-
----
-
 ## ✨ Features
 
 - **JWT Authentication** — email-based login with mandatory email verification before account activation
@@ -35,23 +26,6 @@ A production-ready e-commerce web application with dual payment methods, JWT aut
 - **Order Management** — full order history, invoice details, and automated email alerts on `Shipped` / `Delivered` status changes
 - **Admin Dashboard** — Jazzmin-powered admin panel with store settings, payment credential management, and order control
 - **Cloudflare Deployment** — frontend deployable to Cloudflare Pages, backend via tunnel or cloud service
-
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────┐        ┌──────────────────────────┐
-│   React Frontend    │ ◄────► │   Django REST Backend    │
-│   (Vite / JS)       │  API   │   (DRF + JWT)            │
-└─────────────────────┘        └────────────┬─────────────┘
-                                             │
-                          ┌──────────────────┼──────────────────┐
-                          ▼                  ▼                  ▼
-                   SSLCommerz           SQLite / DB         Gmail SMTP
-                  (Online Pay)       (Orders, Users)     (Verification &
-                                                         Notifications)
-```
 
 ---
 
@@ -69,22 +43,7 @@ A production-ready e-commerce web application with dual payment methods, JWT aut
 
 ---
 
-## 🗂️ Project Structure
 
-```
-e-commerce/
-├── backend/                  # Django REST API
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── static/ & media/
-│   └── [apps: auth, orders, products, payments]
-├── frontend/                 # React + Vite
-│   ├── src/
-│   ├── package.json
-│   └── vite.config.js
-├── .env.example              # Environment variable template
-└── README.md
-```
 
 ---
 
