@@ -41,13 +41,6 @@ A production-ready e-commerce web application with dual payment methods, JWT aut
 | Admin | Jazzmin |
 | Deployment | Cloudflare Pages (frontend) |
 
----
-
-
-
----
-
-## 🚀 Getting Started
 
 ### Prerequisites
 
