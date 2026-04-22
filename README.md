@@ -14,7 +14,209 @@ A production-ready, enterprise-grade e-commerce system built with Django (Backen
 ```bash
 cd backend
 # Virtual environment (assumed created)
-# Activate: .\venv\Scripts\activate (Windows)
+# Activate: .\venv\Scripts\activate (Windows)# 🛒 RB Trading — Full-Stack E-Commerce Platform
+
+A production-ready e-commerce web application with dual payment methods, JWT authentication with email verification, and automated order management — built with Django REST Framework and React.
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-REST%20Framework-green?logo=django&logoColor=white)
+![React](https://img.shields.io/badge/React-Vite-61DAFB?logo=react&logoColor=black)
+![SSLCommerz](https://img.shields.io/badge/Payment-SSLCommerz-orange)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Status](https://img.shields.io/badge/Status-Active-success)
+
+---
+
+## ✨ Features
+
+- **JWT Authentication** — email-based login with mandatory email verification before account activation
+- **SSLCommerz Integration** — secure online payment with IPN (Instant Payment Notification) validation
+- **Cash on Delivery** — COD order flow with real-time status tracking
+- **Order Management** — full order history, invoice details, and automated email alerts on `Shipped` / `Delivered` status changes
+- **Admin Dashboard** — Jazzmin-powered admin panel with store settings, payment credential management, and order control
+- **Cloudflare Deployment** — frontend deployable to Cloudflare Pages, backend via tunnel or cloud service
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────┐        ┌──────────────────────────┐
+│   React Frontend    │ ◄────► │   Django REST Backend    │
+│   (Vite / JS)       │  API   │   (DRF + JWT)            │
+└─────────────────────┘        └────────────┬─────────────┘
+                                             │
+                          ┌──────────────────┼──────────────────┐
+                          ▼                  ▼                  ▼
+                   SSLCommerz           SQLite / DB         Gmail SMTP
+                  (Online Pay)       (Orders, Users)     (Verification &
+                                                         Notifications)
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Django, Django REST Framework |
+| Frontend | React, Vite, CSS |
+| Authentication | JWT (email-based, custom flow) |
+| Payment | SSLCommerz (online) + Cash on Delivery |
+| Email | Gmail SMTP |
+| Admin | Jazzmin |
+| Deployment | Cloudflare Pages (frontend) |
+
+---
+
+## 🗂️ Project Structure
+
+```
+e-commerce/
+├── backend/                  # Django REST API
+│   ├── manage.py
+│   ├── requirements.txt
+│   ├── static/ & media/
+│   └── [apps: auth, orders, products, payments]
+├── frontend/                 # React + Vite
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
+├── .env.example              # Environment variable template
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- Gmail account (for SMTP)
+- SSLCommerz sandbox account (for payment testing)
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Probir127/e-commerce-.git
+cd e-commerce-
+```
+
+### 2. Backend setup
+
+```bash
+cd backend
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+# Linux / macOS
+source venv/bin/activate
+
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+### 3. Frontend setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Visit: `http://localhost:5173`
+
+---
+
+## ⚙️ Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Description |
+|---|---|
+| `SECRET_KEY` | Django secret key |
+| `DEBUG` | `True` for dev, `False` for production |
+| `FRONTEND_URL` | Frontend URL (e.g. `http://localhost:5173`) |
+| `SSLCOMMERZ_STORE_ID` | SSLCommerz Store ID |
+| `SSLCOMMERZ_STORE_PASS` | SSLCommerz Store Password |
+| `EMAIL_HOST_USER` | Gmail address for sending emails |
+| `EMAIL_HOST_PASSWORD` | Gmail App Password (not your login password) |
+
+> ⚠️ Never commit your `.env` file. It is listed in `.gitignore`.
+
+---
+
+## 💳 Payment Flow
+
+### Online (SSLCommerz)
+1. User places order → redirected to SSLCommerz payment page
+2. On success, SSLCommerz sends IPN callback to backend
+3. Backend validates IPN and marks order as `Paid`
+
+### Cash on Delivery
+1. User places order → instantly created with `Pending` payment status
+2. Admin updates status to `Shipped` / `Delivered` via dashboard
+3. Customer receives automated email notification at each stage
+
+---
+
+## 🔐 Authentication Flow
+
+1. User registers → account created as **inactive**
+2. Verification code sent to email
+3. User verifies → account activated
+4. JWT tokens issued on login (email-based, not username)
+
+---
+
+## 🚢 Deployment
+
+### Frontend (Cloudflare Pages)
+
+```bash
+cd frontend
+npm run build
+npx wrangler pages deploy dist --project-name rb-trading-frontend
+```
+
+### Backend
+
+Deploy to Heroku, Railway, or DigitalOcean. Update these in `settings.py`:
+```python
+ALLOWED_HOSTS = ['your-backend-domain.com']
+CORS_ALLOWED_ORIGINS = ['https://your-frontend-domain.com']
+```
+
+---
+
+## 📌 Future Improvements
+
+- [ ] Product search and category filtering
+- [ ] PostgreSQL for production database
+- [ ] Image CDN integration (Cloudinary)
+- [ ] Mobile-responsive UI improvements
+- [ ] Wishlist and product reviews
+
+---
+
+## 👤 Author
+
+**Probir Saha Shohom**
+[GitHub](https://github.com/Probir127) · [LinkedIn](https://www.linkedin.com/in/probir-saha-shohom-b01868280/)
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
